@@ -1,5 +1,3 @@
-
-
 data "yandex_compute_image" "ubuntu-worker" {
   family = var.os_image_worker
 }

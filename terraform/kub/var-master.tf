@@ -1,4 +1,3 @@
-
 variable "os_image_master" {
   type    = string
   default = "ubuntu-2004-lts"

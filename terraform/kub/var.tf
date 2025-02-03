@@ -33,10 +33,15 @@ variable "exclude_ansible" {
   default     = false
 }
 
+
 variable "ssh_public_key" {
- default     = ""
+  description = "SSH public key"
+  type        = string
+  default     = ""
 }
 
-variable "ssh_private_key" {
- default     = ""
+variable "account_name" {
+  description = "имя СА для куба "
+  default = "SA-kub"
+
 }

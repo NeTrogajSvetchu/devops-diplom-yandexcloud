@@ -22,3 +22,13 @@ runcmd:
   - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
   - chmod 700 get_helm.sh
   - ./get_helm.sh
+  - ufw disable
+  - iptables -F
+  - iptables -X
+  - iptables -t nat -F
+  - iptables -t nat -X
+  - iptables -t mangle -F
+  - iptables -t mangle -X
+  - iptables -P INPUT ACCEPT
+  - iptables -P FORWARD ACCEPT
+  - iptables -P OUTPUT ACCEPT

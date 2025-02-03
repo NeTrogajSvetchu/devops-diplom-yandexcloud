@@ -1,4 +1,3 @@
-
 variable "zone-a" {
   type        = string
   default     = "ru-central1-a"

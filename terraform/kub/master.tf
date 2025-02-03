@@ -1,4 +1,3 @@
-
 data "yandex_compute_image" "ubuntu-master" {
   family = var.os_image_master
 }
@@ -25,7 +24,7 @@ resource "yandex_compute_instance" "master" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${local.ssh-keys}"
+    ssh-keys            = "ubuntu:${local.ssh-keys}"
     serial-port-enable = "1"
     user-data          = data.template_file.cloudinit.rendered
   }

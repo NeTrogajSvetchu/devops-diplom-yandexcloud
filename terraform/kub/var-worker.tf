@@ -1,5 +1,3 @@
-
-
 variable "os_image_worker" {
   type    = string
   default = "ubuntu-2004-lts"
