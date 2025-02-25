@@ -60,11 +60,11 @@ jobs:
         script: |
           sudo su 
 
-          kubectl delete -f /etc/kubernetes/manifests/git/${{ env.VARS_APP_REPO }}/terraform/kub/yml/deploy.yaml
-          kubectl delete -f /etc/kubernetes/manifests/git/${{ env.VARS_APP_REPO }}/terraform/kub/yml/service.yaml
+          kubectl delete -f /etc/kubernetes/manifests/git/devops-diplom-yandexcloud/terraform/kub/yml/deploy.yaml
+          kubectl delete -f /etc/kubernetes/manifests/git/devops-diplom-yandexcloud/terraform/kub/yml/service.yaml
           rm -rf /etc/kubernetes/manifests/git/${{ env.VARS_APP_REPO }}
           sudo git clone ${{ env.VARS_APP_REPO }} /etc/kubernetes/manifests/git/
-          cd /etc/kubernetes/manifests/git/${{ env.REPO_DIR}}
+          cd /etc/kubernetes/manifests/git/devops-diplom-yandexcloud
           
           sudo kubectl apply -f terraform/kub/yml/deploy.yaml
           sudo kubectl apply -f terraform/kub/yml/service.yaml
