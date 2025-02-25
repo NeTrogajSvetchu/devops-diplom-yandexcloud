@@ -62,7 +62,8 @@ jobs:
           sudo kubectl delete -f deploy.yaml
           sudo kubectl delete -f service.yaml
           cd /etc/kubernetes/manifests/
-          sudo git force-clone ${{ env.VARS_APP_REPO }}
+          sudo rm -rf devops-diplom-yandexcloud
+          sudo git clone ${{ env.VARS_APP_REPO }}
           cd devops-diplom-yandexcloud/terraform/kub/yml/
           sudo kubectl apply -f deploy.yaml
           sudo kubectl apply -f service.yaml
