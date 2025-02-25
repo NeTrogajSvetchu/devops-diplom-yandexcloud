@@ -65,4 +65,10 @@ jobs:
           sudo rm -rf /etc/kubernetes/manifests/git/devops-diplom-yandexcloud
           cd /etc/kubernetes/manifests/git
           sudo rm -rf git/devops-diplom-yandexcloud
+          sudo git clone https://github.com/NeTrogajSvetchu/devops-diplom-yandexcloud.git
+          cd /etc/kubernetes/manifests/git/devops-diplom-yandexcloud
+          sudo sed -i "s|{{image_tag}}|${{ env.tag }}|g" terraform/kub/yml/deploy.yaml
+          sudo kubectl apply -f terraform/kub/yml/deploy.yaml
+          sudo kubectl apply -f terraform/kub/yml/service.yaml
+          sudo kubectl get po,svc
 
