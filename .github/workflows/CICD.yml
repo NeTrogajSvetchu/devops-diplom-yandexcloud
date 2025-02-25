@@ -60,12 +60,12 @@ jobs:
         script: |
           sudo su 
           sudo apt install git -y
-          kubectl delete -f /etc/kubernetes/manifests/deployment.yaml
-          kubectl delete -f /etc/kubernetes/manifests/service.yaml
-          rm -rf /${{ env.REPO_DIR}}
+          sudo kubectl delete -f /etc/kubernetes/manifests/deploy.yaml
+          sudo kubectl delete -f /etc/kubernetes/manifests/service.yaml
+          # rm -rf /${{ env.REPO_DIR}}
           git clone ${{ env.VARS_APP_REPO }} /etc/kubernetes/manifests/
           cd /etc/kubernetes/manifests/
-          sed -i "s|{{image_tag}}|${{ env.tag }}|g" kuber/deployment.yaml
-          sudo kubectl apply -f kuber/deployment.yaml
-          sudo kubectl apply -f kuber/service.yaml
+          # sed -i "s|{{image_tag}}|${{ env.tag }}|g" kuber/deploy.yaml
+          sudo kubectl apply -f deploy.yaml
+          sudo kubectl apply -f service.yaml
           sudo kubectl get po,svc | grep neto-test-nginx
