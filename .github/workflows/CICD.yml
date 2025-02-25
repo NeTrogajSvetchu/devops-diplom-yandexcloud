@@ -59,13 +59,13 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           sudo su 
-          sudo apt install git -y
-          kubectl delete -f /app/kuber/deployment.yaml
-          kubectl delete -f /app/kuber/service.yaml
+
+          kubectl delete -f /etc/kubernetes/manifests/git/${{ env.VARS_APP_REPO }}/terraform/kub/yml/deploy.yaml
+          kubectl delete -f /etc/kubernetes/manifests/git/${{ env.VARS_APP_REPO }}/terraform/kub/yml/service.yaml
           rm -rf /etc/kubernetes/manifests/git/${{ env.VARS_APP_REPO }}
           sudo git clone ${{ env.VARS_APP_REPO }} /etc/kubernetes/manifests/git/
           cd /etc/kubernetes/manifests/git/${{ env.REPO_DIR}}
           
-          sudo kubectl apply -f deployment.yaml
-          sudo kubectl apply -f service.yaml
+          sudo kubectl apply -f terraform/kub/yml/deploy.yaml
+          sudo kubectl apply -f terraform/kub/yml/service.yaml
           sudo kubectl get po,svc
