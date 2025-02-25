@@ -62,7 +62,7 @@ jobs:
 
           sudo kubectl delete -f /etc/kubernetes/manifests/git/devops-diplom-yandexcloud/terraform/kub/yml/deploy.yaml
           sudo kubectl delete -f /etc/kubernetes/manifests/git/devops-diplom-yandexcloud/terraform/kub/yml/service.yaml
-          rm -rf /etc/kubernetes/manifests/git/devops-diplom-yandexcloud
+          sudo rm -rf /etc/kubernetes/manifests/git/devops-diplom-yandexcloud
           sudo git clone ${{ env.VARS_APP_REPO }} /etc/kubernetes/manifests/git/
           cd /etc/kubernetes/manifests/git/devops-diplom-yandexcloud
           
