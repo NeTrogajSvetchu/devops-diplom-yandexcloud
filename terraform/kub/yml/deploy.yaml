@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: kuxar/neto-test-nginx
+        image: kuxar/neto-test-nginx:{{image_tag}}
         ports:
         - containerPort: 80
 
