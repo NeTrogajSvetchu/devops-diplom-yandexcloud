@@ -59,13 +59,10 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           sudo su
-          cd /etc/kubernetes/manifests/devops-diplom-yandexcloud/terraform/kub/yml/
           sudo kubectl delete -f deploy.yaml
           sudo kubectl delete -f service.yaml
-          sudo rm deploy.yaml
-          sudo rm service.yaml
           cd /etc/kubernetes/manifests/
-          sudo git clone ${{ env.VARS_APP_REPO }}
+          sudo git force-clone ${{ env.VARS_APP_REPO }}
           cd devops-diplom-yandexcloud/terraform/kub/yml/
           sudo kubectl apply -f deploy.yaml
           sudo kubectl apply -f service.yaml
