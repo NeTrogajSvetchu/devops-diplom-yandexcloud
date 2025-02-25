@@ -62,10 +62,10 @@ jobs:
           sudo apt install git -y
           kubectl delete -f /app/kuber/deployment.yaml
           kubectl delete -f /app/kuber/service.yaml
-          rm -rf /${{ env.REPO_DIR}}
-          git clone ${{ env.VARS_APP_REPO }} /${{ env.REPO_DIR}}
-          cd /${{ env.REPO_DIR}}
-          sed -i "s|{{image_tag}}|${{ env.tag }}|g" kuber/deployment.yaml
-          sudo kubectl apply -f kuber/deployment.yaml
-          sudo kubectl apply -f kuber/service.yaml
-          sudo kubectl get po,svc | grep diploma
+          rm -rf /etc/kubernetes/manifests/git/${{ env.VARS_APP_REPO }}
+          sudo git clone ${{ env.VARS_APP_REPO }} /etc/kubernetes/manifests/git/
+          cd /etc/kubernetes/manifests/git/${{ env.REPO_DIR}}
+          
+          sudo kubectl apply -f deployment.yaml
+          sudo kubectl apply -f service.yaml
+          sudo kubectl get po,svc
