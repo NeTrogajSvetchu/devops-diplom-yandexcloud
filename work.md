@@ -37,4 +37,39 @@ $SECRET_KEY="<секретный_ключ>"
 
 ![alt text](png/2.png)
 
-7.ansible-playbook -i inventory/mycluster/hosts.yaml -u ubuntu --become --become-user=root --private-key=~/ssh_key/id_ed25519 -e 'ansible_ssh_common_args="-o StrictHostKeyChecking=no"' cluster.yml --flush-cache
+docker login
+docker build -t neto-test-nginx
+docker tag neto-test-nginx:latest kuxar/neto-test-nginx:latest
+docker push kuxar/neto-test-nginx:latest
+
+7.
+python -m venv myenv
+source myenv/bin/activate
+pip install -r requirements.txt
+ansible-playbook -i inventory/mycluster/hosts.yaml -u ubuntu --become --become-user=root --private-key=/home/deck/.ssh/id_ed25519 -e 'ansible_ssh_common_args="-o StrictHostKeyChecking=no"' cluster.yml --flush-cache
+
+
+Проверка кластера куба
+sudo kubectl apply -f deploy.yaml
+sudo kubectl apply -f service.yaml
+sudo kubectl apply -f grafana.yaml
+
+![alt text](png/3.png)
+
+
+
+
+![alt text](png/4.png)
+
+
+sudo helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+sudo helm repo update
+sudo helm install prometheus-stack  prometheus-community/kube-prometheus-stack
+sudo   kubectl --namespace default get secrets prometheus-stack-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
+prom-operator
+
+![alt text](image.png)
+
+![alt text](image-1.png)
+
+cicd
