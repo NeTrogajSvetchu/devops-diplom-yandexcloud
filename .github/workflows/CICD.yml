@@ -65,6 +65,7 @@ jobs:
           sudo rm deploy.yaml
           sudo rm service.yaml
           sudo git clone ${{ env.VARS_APP_REPO }}/tree/main/doc
+          cd devops-diplom-yandexcloud/doc/
           sudo kubectl apply -f deploy.yaml
           sudo kubectl apply -f service.yaml
           sudo kubectl get po,svc | grep neto-test-nginx
