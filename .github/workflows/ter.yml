@@ -9,6 +9,7 @@ env:
   TF_VERSION: "1.5.7"
   YC_FOLDER_ID: "b1gsg9mk694pae2d18og" # Несекретный ID можно оставить здесь
   YC_CLOUD_ID: "b1grurkigc4agd16neb0"  # Несекретный ID
+  TF_BACKEND_BUCKET: "storage-website-test"
 
 jobs:
   deploy:
@@ -33,6 +34,13 @@ jobs:
       - name: Terraform Init
         run: terraform init -backend-config="access_key=${{ secrets.YC_STORAGE_ACCESS_KEY }}" -backend-config="secret_key=${{ secrets.YC_STORAGE_SECRET_KEY }}"
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
         if: github.ref == 'refs/heads/main'
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
