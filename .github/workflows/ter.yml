@@ -1,45 +1,36 @@
-name: ter
+name: Terraform Plan and Apply
 
-stages:
-  - validate
-  - plan
-  - apply
+on:
+  push:
+    branches: [ "main" ]  # Запуск при пуше в ветку main
+  pull_request:           # Запуск при создании/изменении PR
+    branches: [ "main" ]
 
-variables:
-  TF_ROOT: .
+env:
   TF_VERSION: "1.5.7"
 
-cache:
-  paths:
-    - .terraform
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-before_script:
-  - rm -rf .terraform
-  - wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
-  - unzip terraform_${TF_VERSION}_linux_amd64.zip -d /usr/local/bin/
-  - terraform --version
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
 
-validate:
-  stage: validate
-  script:
-    - terraform init
-    - terraform validate
+      - name: Terraform Init
+        run: terraform init
 
-plan:
-  stage: plan
-  script:
-    - terraform init
-    - terraform plan -out=tfplan
-  artifacts:
-    paths:
-      - tfplan
-  only:
-    - main
+      - name: Terraform Validate
+        run: terraform validate
 
-apply:
-  stage: apply
-  script:
-    - terraform apply -auto-approve tfplan
-  only:
-    - main
-  when: manual
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        if: github.ref == 'refs/heads/main'
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+        if: github.ref == 'refs/heads/main'
