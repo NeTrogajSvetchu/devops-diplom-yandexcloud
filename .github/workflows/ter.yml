@@ -3,6 +3,8 @@ name: Yandex Cloud Terraform CI/CD
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 env:
@@ -14,10 +16,34 @@ env:
   YC_REGION: "ru-central1"
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          
+      - name: Terraform Init
+        working-directory: ./terraform/kub
+        run: |
+          terraform init -backend=false
+          
+      - name: Terraform Validate
+        working-directory: ./terraform/kub
+        run: terraform validate
+        
+      - name: Terraform Format Check
+        working-directory: ./terraform/kub
+        run: terraform fmt -check -recursive
+
   deploy:
+    needs: validate
     runs-on: ubuntu-latest
     environment: production
-
+    
     steps:
       - uses: actions/checkout@v4
 
@@ -25,7 +51,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
-
+          terraform_wrapper: false
 
       - name: Terraform Init
         working-directory: ./terraform/kub
@@ -38,10 +64,6 @@ jobs:
             -backend-config="region=${{ env.YC_REGION }}" \
             -backend-config="skip_region_validation=true" \
             -backend-config="force_path_style=true"
-
-      - name: Terraform Validate
-        working-directory: ./terraform/kub
-        run: terraform validate
 
       - name: Terraform Plan
         working-directory: ./terraform/kub
