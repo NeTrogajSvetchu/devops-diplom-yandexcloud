@@ -69,9 +69,15 @@ jobs:
 
       - name: Terraform Plan
         working-directory: ./terraform/kub
-        run: terraform plan -out=tfplan
-        if: github.ref == 'refs/heads/main'
-
+        env:
+          YC_TOKEN: ${{ secrets.YC_TOKEN }}
+          YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+        run: |
+          terraform plan -out=tfplan \
+            -var="token=$YC_TOKEN" \
+            -var="cloud_id=$YC_CLOUD_ID" \
+            -var="folder_id=$YC_FOLDER_ID"
       - name: Terraform Apply
         working-directory: ./terraform/kub
         run: terraform apply -auto-approve tfplan
