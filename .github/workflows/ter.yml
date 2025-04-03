@@ -83,14 +83,25 @@ jobs:
           YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
           YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
         run: |
+          # Выполняем plan и сохраняем вывод в файл
           terraform plan -out=tfplan \
             -var="token=$YC_TOKEN" \
             -var="cloud_id=$YC_CLOUD_ID" \
-            -var="folder_id=$YC_FOLDER_ID"
+            -var="folder_id=$YC_FOLDER_ID" > plan_output.txt
           
-          # Сохраняем план для review
-          terraform show -no-color tfplan > tfplan.txt
-          echo "PLAN_OUTPUT=$(cat tfplan.txt)" >> $GITHUB_OUTPUT
+          # Фильтруем вывод, оставляя только изменения
+          grep -E '(^  #|^  \+|^  \-|^  ~|^Plan:)' plan_output.txt | tee filtered_plan.txt
+          
+          # Добавляем аннотацию в GitHub UI
+          echo "::notice::$(cat filtered_plan.txt)"
+          
+          # Сохраняем план как артефакт
+          echo "PLAN_OUTPUT<<EOF" >> $GITHUB_ENV
+          cat filtered_plan.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
+          # Всегда завершаем успешно, даже если есть изменения
+          exit 0
 
       - name: Terraform Apply
         working-directory: ./terraform/kub
