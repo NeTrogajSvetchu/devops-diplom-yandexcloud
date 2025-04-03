@@ -30,15 +30,19 @@ on:
            yc config set cloud-id ${{ env.YC_CLOUD_ID }}
  
        - name: Terraform Init
+         working-directory: ./terraform/kub
          run: terraform init -backend-config="access_key=${{ secrets.YC_STORAGE_ACCESS_KEY }}" -backend-config="secret_key=${{ secrets.YC_STORAGE_SECRET_KEY }}"
  
        - name: Terraform Validate
+         working-directory: ./terraform/kub
          run: terraform validate
  
        - name: Terraform Plan
+         working-directory: ./terraform/kub
          run: terraform plan -out=tfplan
          if: github.ref == 'refs/heads/main'
  
        - name: Terraform Apply
+         working-directory: ./terraform/kub
          run: terraform apply -auto-approve tfplan
          if: github.ref == 'refs/heads/main' && github.event_name == 'push'
