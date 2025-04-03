@@ -1,15 +1,18 @@
+name: Yandex Cloud Terraform CI/CD
+ 
 on:
    push:
      branches: [main]
    workflow_dispatch:
  
- env:
+ 
+env:
    TF_VERSION: "1.5.7"
    YC_FOLDER_ID: "b1gsg9mk694pae2d18og" # Несекретный ID можно оставить здесь
    YC_CLOUD_ID: "b1grurkigc4agd16neb0"  # Несекретный ID
    TF_BACKEND_BUCKET: "storage-website-test"
  
- jobs:
+jobs:
    deploy:
      runs-on: ubuntu-latest
      environment: production
