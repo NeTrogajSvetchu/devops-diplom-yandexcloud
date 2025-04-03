@@ -1,36 +1,38 @@
-name: Terraform Plan and Apply
+name: Yandex Cloud Terraform
 
 on:
   push:
-    branches: [ "main" ]  # Запуск при пуше в ветку main
-  pull_request:           # Запуск при создании/изменении PR
-    branches: [ "main" ]
+    branches: [main]
+  workflow_dispatch:
 
 env:
   TF_VERSION: "1.5.7"
+  YC_FOLDER_ID: "b1gsg9mk694pae2d18og" # Несекретный ID можно оставить здесь
+  YC_CLOUD_ID: "b1grurkigc4agd16neb0"  # Несекретный ID
 
 jobs:
-  terraform:
+  deploy:
     runs-on: ubuntu-latest
+    environment: production
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
+      - name: Configure YC CLI
+        run: |
+          echo '${{ secrets.YC_SERVICE_ACCOUNT_KEY }}' > key.json
+          yc config set service-account-key key.json
+          yc config set folder-id ${{ env.YC_FOLDER_ID }}
+          yc config set cloud-id ${{ env.YC_CLOUD_ID }}
+
       - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Validate
-        run: terraform validate
-
-      - name: Terraform Plan
-        run: terraform plan -out=tfplan
-        if: github.ref == 'refs/heads/main'
+        run: terraform init -backend-config="access_key=${{ secrets.YC_STORAGE_ACCESS_KEY }}" -backend-config="secret_key=${{ secrets.YC_STORAGE_SECRET_KEY }}"
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve
         if: github.ref == 'refs/heads/main'
