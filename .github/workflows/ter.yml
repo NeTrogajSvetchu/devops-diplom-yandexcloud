@@ -23,7 +23,19 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
-              
+          
+      - name: Terraform Init
+        working-directory: ./terraform/kub
+        run: |
+          terraform init -reconfigure \
+            -backend-config="access_key=${{ secrets.YC_STORAGE_ACCESS_KEY }}" \
+            -backend-config="secret_key=${{ secrets.YC_STORAGE_SECRET_KEY }}" \
+            -backend-config="endpoint=${{ env.YC_STORAGE_ENDPOINT }}" \
+            -backend-config="bucket=${{ env.TF_BACKEND_BUCKET }}" \
+            -backend-config="region=${{ env.YC_REGION }}" \
+            -backend-config="skip_region_validation=true" \
+            -backend-config="force_path_style=true"
+        
       - name: Terraform Validate
         working-directory: ./terraform/kub
         run: terraform validate
@@ -59,17 +71,6 @@ jobs:
           aws configure set default.region ${{ env.YC_REGION }}
           aws --endpoint-url ${{ env.YC_STORAGE_ENDPOINT }} s3 ls s3://${{ env.TF_BACKEND_BUCKET }} || echo "Bucket access check"
 
-      - name: Terraform Init
-        working-directory: ./terraform/kub
-        run: |
-          terraform init -reconfigure \
-            -backend-config="access_key=${{ secrets.YC_STORAGE_ACCESS_KEY }}" \
-            -backend-config="secret_key=${{ secrets.YC_STORAGE_SECRET_KEY }}" \
-            -backend-config="endpoint=${{ env.YC_STORAGE_ENDPOINT }}" \
-            -backend-config="bucket=${{ env.TF_BACKEND_BUCKET }}" \
-            -backend-config="region=${{ env.YC_REGION }}" \
-            -backend-config="skip_region_validation=true" \
-            -backend-config="force_path_style=true"
 
 
       - name: Terraform Plan
