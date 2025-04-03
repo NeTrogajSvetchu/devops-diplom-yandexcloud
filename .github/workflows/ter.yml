@@ -1,3 +1,5 @@
+name: ter
+
 stages:
   - validate
   - plan
