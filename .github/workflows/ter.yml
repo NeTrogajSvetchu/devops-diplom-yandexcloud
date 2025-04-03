@@ -10,7 +10,7 @@ on:
 env:
   TF_VERSION: "1.5.7"
   TF_BACKEND_BUCKET: "storage-website-test"
-  YC_STORAGE_ENDPOINT: "https://storage.yandexcloud.net"
+  YC_STORAGE_ENDPOINT: "storage.yandexcloud.net"
   YC_REGION: "ru-central1"
 
 jobs:
@@ -23,11 +23,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
-          
-      - name: Terraform Init (Light)
-        working-directory: ./terraform/kub
-        run: terraform init -backend=false
-          
+              
       - name: Terraform Validate
         working-directory: ./terraform/kub
         run: terraform validate
@@ -75,12 +71,6 @@ jobs:
             -backend-config="skip_region_validation=true" \
             -backend-config="force_path_style=true"
 
-      - name: Terraform State Check
-        working-directory: ./terraform/kub
-        run: |
-          terraform state list || echo "No state yet"
-          terraform state pull > current.tfstate
-          [ -s current.tfstate ] || echo "Empty state file"
 
       - name: Terraform Plan
         working-directory: ./terraform/kub
@@ -94,9 +84,7 @@ jobs:
             -var="cloud_id=$YC_CLOUD_ID" \
             -var="folder_id=$YC_FOLDER_ID"
           
-          # Сохраняем план для review
-          terraform show -no-color tfplan > tfplan.txt
-          echo "PLAN_OUTPUT=$(cat tfplan.txt)" >> $GITHUB_OUTPUT
+ 
 
       - name: Terraform Apply
         working-directory: ./terraform/kub
