@@ -25,12 +25,7 @@ jobs:
          with:
            terraform_version: ${{ env.TF_VERSION }}
  
-       - name: Configure YC CLI
-         run: |
-           echo '${{ secrets.YC_SERVICE_ACCOUNT_KEY }}' > key.json
-           yc config set service-account-key key.json
-           yc config set folder-id ${{ env.YC_FOLDER_ID }}
-           yc config set cloud-id ${{ env.YC_CLOUD_ID }}
+       
  
        - name: Terraform Init
          working-directory: ./terraform/kub
