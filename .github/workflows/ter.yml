@@ -24,13 +24,6 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Configure YC CLI
-        run: |
-          echo '${{ secrets.YC_SERVICE_ACCOUNT_KEY }}' > key.json
-          yc config set service-account-key key.json
-          yc config set folder-id ${{ env.YC_FOLDER_ID }}
-          yc config set cloud-id ${{ env.YC_CLOUD_ID }}
-
       - name: Terraform Init
         run: terraform init -backend-config="access_key=${{ secrets.YC_STORAGE_ACCESS_KEY }}" -backend-config="secret_key=${{ secrets.YC_STORAGE_SECRET_KEY }}"
 
