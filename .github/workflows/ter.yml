@@ -14,8 +14,14 @@ env:
   YC_REGION: "ru-central1"
 
 jobs:
-  validate:
+  deploy:
+    
     runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      id-token: write  # Для OIDC аутентификации
+    
     steps:
       - uses: actions/checkout@v4
       
@@ -47,15 +53,7 @@ jobs:
           terraform fmt -recursive  # Автоисправление форматирования
           git diff --exit-code || echo "::notice::Fixed formatting automatically"
 
-  deploy:
-    needs: validate
-    runs-on: ubuntu-latest
-    environment: production
-    permissions:
-      contents: read
-      id-token: write  # Для OIDC аутентификации
-    
-    steps:
+
       - uses: actions/checkout@v4
 
       - name: Setup Terraform
