@@ -1,45 +1,66 @@
 name: Yandex Cloud Terraform CI/CD
- 
+
 on:
-   push:
-     branches: [main]
-   workflow_dispatch:
- 
- 
+  push:
+    branches: [main]
+  workflow_dispatch:
+
 env:
   TF_VERSION: "1.5.7"
   YC_FOLDER_ID: "b1gsg9mk694pae2d18og"
   YC_CLOUD_ID: "b1grurkigc4agd16neb0"
   TF_BACKEND_BUCKET: "storage-website-test"
-  YC_STORAGE_ENDPOINT: "https://storage.yandexcloud.net"  # Добавлено
+  YC_STORAGE_ENDPOINT: "https://storage.yandexcloud.net"
   YC_REGION: "ru-central1"
-  
+
 jobs:
-   deploy:
-     runs-on: ubuntu-latest
-     environment: production
- 
-     steps:
-       - uses: actions/checkout@v4
- 
-       - name: Setup Terraform
-         uses: hashicorp/setup-terraform@v2
-         with:
-           terraform_version: ${{ env.TF_VERSION }}
-       - name: Terraform Init
-         working-directory: ./terraform/kub
-         run: terraform init -backend-config="access_key=$ACCESS_KEY" -backend-config="secret_key=$SECRET_KEY"
-         
-       - name: Terraform Validate
-         working-directory: ./terraform/kub
-         run: terraform validate
- 
-       - name: Terraform Plan
-         working-directory: ./terraform/kub
-         run: terraform plan -out=tfplan
-         if: github.ref == 'refs/heads/main'
- 
-       - name: Terraform Apply
-         working-directory: ./terraform/kub
-         run: terraform apply -auto-approve tfplan
-         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Install Yandex Cloud CLI
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          echo "$HOME/yandex-cloud/bin" >> $GITHUB_PATH
+
+      - name: Configure YC CLI
+        run: |
+          echo '${{ secrets.YC_SERVICE_ACCOUNT_KEY }}' > key.json
+          yc config set service-account-key key.json
+          yc config set folder-id ${{ env.YC_FOLDER_ID }}
+          yc config set cloud-id ${{ env.YC_CLOUD_ID }}
+          rm -f key.json
+
+      - name: Terraform Init
+        working-directory: ./terraform/kub
+        run: |
+          terraform init -reconfigure \
+            -backend-config="endpoint=${{ env.YC_STORAGE_ENDPOINT }}" \
+            -backend-config="bucket=${{ env.TF_BACKEND_BUCKET }}" \
+            -backend-config="region=${{ env.YC_REGION }}" \
+            -backend-config="access_key=${{ secrets.YC_STORAGE_ACCESS_KEY }}" \
+            -backend-config="secret_key=${{ secrets.YC_STORAGE_SECRET_KEY }}" \
+            -backend-config="skip_region_validation=true" \
+            -backend-config="force_path_style=true"
+
+      - name: Terraform Validate
+        working-directory: ./terraform/kub
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: ./terraform/kub
+        run: terraform plan -out=tfplan
+        if: github.ref == 'refs/heads/main'
+
+      - name: Terraform Apply
+        working-directory: ./terraform/kub
+        run: terraform apply -auto-approve tfplan
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
