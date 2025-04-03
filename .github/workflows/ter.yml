@@ -30,15 +30,7 @@ jobs:
 
       - name: Terraform Init
         working-directory: ./terraform/kub
-        run: |
-          terraform init -reconfigure \
-            -backend-config="endpoint=${{ env.YC_STORAGE_ENDPOINT }}" \
-            -backend-config="bucket=${{ env.TF_BACKEND_BUCKET }}" \
-            -backend-config="region=${{ env.YC_REGION }}" \
-            -backend-config="access_key=${{ secrets.YC_STORAGE_ACCESS_KEY }}" \
-            -backend-config="secret_key=${{ secrets.YC_STORAGE_SECRET_KEY }}" \
-            -backend-config="skip_region_validation=true" \
-            -backend-config="force_path_style=true"
+        run: terraform init -backend-config="access_key=$ACCESS_KEY" -backend-config="secret_key=$SECRET_KEY"
 
       - name: Terraform Validate
         working-directory: ./terraform/kub
