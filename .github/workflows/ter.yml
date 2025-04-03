@@ -30,7 +30,7 @@ jobs:
 
       - name: Terraform Init
         working-directory: ./terraform/kub
-        run: terraform init -backend-config="access_key=$ACCESS_KEY" -backend-config="secret_key=$SECRET_KEY"
+        run: terraform init -backend-config="access_key=secrets.YC_STORAGE_ACCESS_KEY" -backend-config="secret_key=secrets.YC_STORAGE_ACCESS_KEY"
 
       - name: Terraform Validate
         working-directory: ./terraform/kub
