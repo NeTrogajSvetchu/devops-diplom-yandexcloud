@@ -27,14 +27,17 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
 
 
-
       - name: Terraform Init
         working-directory: ./terraform/kub
-        run: terraform init -backend-config="access_key=${{secrets.YC_STORAGE_ACCESS_KEY}}" -backend-config="secret_key=${{secrets.YC_STORAGE_SECRET_KEY}}"
-
-      - name: Terraform Validate
-        working-directory: ./terraform/kub
-        run: terraform validate
+        run: |
+          terraform init -reconfigure \
+            -backend-config="access_key=${{ secrets.YC_STORAGE_ACCESS_KEY }}" \
+            -backend-config="secret_key=${{ secrets.YC_STORAGE_SECRET_KEY }}" \
+            -backend-config="endpoint=https://storage.yandexcloud.net" \
+            -backend-config="bucket="storage-website-test" \
+            -backend-config="region=ru-central1" \
+            -backend-config="skip_region_validation=true" \
+            -backend-config="force_path_style=true"
 
       - name: Terraform Plan
         working-directory: ./terraform/kub
