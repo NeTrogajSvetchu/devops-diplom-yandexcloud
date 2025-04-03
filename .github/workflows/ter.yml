@@ -9,7 +9,7 @@ env:
   TF_VERSION: "1.5.7"
   YC_FOLDER_ID: "b1gsg9mk694pae2d18og"
   YC_CLOUD_ID: "b1grurkigc4agd16neb0"
-  TF_BACKEND_BUCKET: "storage-website-test"
+
 
 jobs:
   deploy:
