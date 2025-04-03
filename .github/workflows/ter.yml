@@ -67,6 +67,8 @@ jobs:
             -backend-config="skip_region_validation=true" \
             -backend-config="force_path_style=true"
 
+            terraform state pull > current.tfstate
+
       - name: Terraform Plan
         working-directory: ./terraform/kub
         env:
@@ -79,19 +81,6 @@ jobs:
             -var="cloud_id=$YC_CLOUD_ID" \
             -var="folder_id=$YC_FOLDER_ID"
 
-      - name: Terraform Refresh
-        working-directory: ./terraform/kub
-        run: |
-            terraform refresh \
-              -var="token=$YC_TOKEN" \
-              -var="cloud_id=$YC_CLOUD_ID" \
-              -var="folder_id=$YC_FOLDER_ID"
-  
-      - name: Import existing resources
-        working-directory: ./terraform/kub
-        run: |
-          terraform import yandex_vpc_network.diplom $(yc vpc network get --name main --format json | jq -r .id)
-        continue-on-error: true
 
       - name: Terraform Apply
         working-directory: ./terraform/kub
