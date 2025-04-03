@@ -40,4 +40,4 @@ apply:
     - terraform apply -auto-approve tfplan
   only:
     - main
-  when: manua
+  when: manual
